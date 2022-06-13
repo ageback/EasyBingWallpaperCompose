@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 class BingRepository(private val apiService: BingApiService) {
+    suspend fun getBingWallpaperList3(index: Int, ensearch: String): BingResponse =
+        apiService.fetchBingWalls2(getQueryOptions(), index, ensearch)
+
     fun getBingWallpaperList2(index: Int, ensearch: String): Flow<BingResponse> {
         return flow {
             val response = apiService.fetchBingWalls2(getQueryOptions(), index, ensearch)

@@ -8,6 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.bigflowertiger.compopsebingwallpaper.data.model.BingItem
 import com.bigflowertiger.compopsebingwallpaper.domain.BingRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.combineTransform
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
@@ -21,7 +25,25 @@ class BingViewModel @Inject constructor(
     val bingList: State<List<BingItem>> = _bingList
 
     init {
-        getBingWallpaperList2("0")
+        getBingWallpaperList3("0")
+    }
+
+    private fun getBingWallpaperList3(ensearch: String) {
+        viewModelScope.launch {
+            try {
+                coroutineScope {
+                    val deferred1 = async { bingRepository.getBingWallpaperList3(0, ensearch) }
+                    val deferred2 = async { bingRepository.getBingWallpaperList3(8, ensearch) }
+                    val result = awaitAll(deferred1, deferred2)
+                    val list1 = result.flatMap {
+                        it.images
+                    }
+                    consume(list1)
+                }
+            } catch (e: Exception) {
+            }
+        }
+
     }
 
     private fun getBingWallpaperList2(ensearch: String) {
@@ -33,9 +55,7 @@ class BingViewModel @Inject constructor(
             flow1.zip(flow2) { f1, f2 ->
                 f1.images + f2.images
             }.collect { bingList ->
-                _bingList.value = bingList
-                    .sortedByDescending { it.startdate }
-                    .distinctBy { it.hsh }
+                consume(bingList)
             }
         }
     }
@@ -48,10 +68,14 @@ class BingViewModel @Inject constructor(
                 if (f1.data != null && f2.data != null)
                     emit(f1.data!!.images + f2.data!!.images)
             }.collect { bingList ->
-                _bingList.value = bingList
-                    .sortedByDescending { it.startdate }
-                    .distinctBy { it.hsh }
+                consume(bingList)
             }
         }
+    }
+
+    private fun consume(bingList: List<BingItem>) {
+        _bingList.value = bingList
+            .sortedByDescending { it.startdate }
+            .distinctBy { it.hsh }
     }
 }
