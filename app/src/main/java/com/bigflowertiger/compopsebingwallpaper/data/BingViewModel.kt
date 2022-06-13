@@ -31,6 +31,7 @@ class BingViewModel @Inject constructor(
     private fun getBingWallpaperList3(ensearch: String) {
         viewModelScope.launch {
             try {
+                // coroutineScope is needed, else in case of any network error, it will crash
                 coroutineScope {
                     val deferred1 = async { bingRepository.getBingWallpaperList3(0, ensearch) }
                     val deferred2 = async { bingRepository.getBingWallpaperList3(8, ensearch) }
