@@ -1,18 +1,15 @@
 package com.bigflowertiger.compopsebingwallpaper.data
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.bigflowertiger.compopsebingwallpaper.data.model.BingItem
-import com.bigflowertiger.compopsebingwallpaper.data.model.BingResponse
 import com.bigflowertiger.compopsebingwallpaper.domain.BingRepository
-import com.hadiyarajesh.flower.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.combineTransform
+import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,7 +21,23 @@ class BingViewModel @Inject constructor(
     val bingList: State<List<BingItem>> = _bingList
 
     init {
-        getBingWallpaperList("0")
+        getBingWallpaperList2("0")
+    }
+
+    private fun getBingWallpaperList2(ensearch: String) {
+
+        val flow1 = bingRepository.getBingWallpaperList2(0, ensearch)
+        val flow2 = bingRepository.getBingWallpaperList2(8, ensearch)
+
+        viewModelScope.launch {
+            flow1.zip(flow2) { f1, f2 ->
+                f1.images + f2.images
+            }.collect { bingList ->
+                _bingList.value = bingList
+                    .sortedByDescending { it.startdate }
+                    .distinctBy { it.hsh }
+            }
+        }
     }
 
     private fun getBingWallpaperList(ensearch: String) {

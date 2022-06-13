@@ -14,4 +14,12 @@ interface BingApiService {
         @Query("idx") index: Int?,
         @Query("ensearch") ensearch: String?
     ): Flow<ApiResponse<BingResponse>>
+
+
+    @GET("HPImageArchive.aspx")
+    suspend fun fetchBingWalls2(
+        @QueryMap options: Map<String, String>? = null,
+        @Query("idx") index: Int?,
+        @Query("ensearch") ensearch: String?
+    ): BingResponse
 }

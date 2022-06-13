@@ -4,9 +4,19 @@ import com.bigflowertiger.compopsebingwallpaper.data.model.BingResponse
 import com.bigflowertiger.compopsebingwallpaper.network.api.BingApiService
 import com.hadiyarajesh.flower.Resource
 import com.hadiyarajesh.flower.networkResource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
 class BingRepository(private val apiService: BingApiService) {
+    fun getBingWallpaperList2(index: Int, ensearch: String): Flow<BingResponse> {
+        return flow {
+            val response = apiService.fetchBingWalls2(getQueryOptions(), index, ensearch)
+            emit(response)
+        }.flowOn(Dispatchers.IO)
+    }
+
     fun getBingWallpaperList(index: Int, ensearch: String): Flow<Resource<BingResponse>> =
         networkResource(
             fetchFromRemote = { apiService.fetchBingWalls(getQueryOptions(), index, ensearch) }
