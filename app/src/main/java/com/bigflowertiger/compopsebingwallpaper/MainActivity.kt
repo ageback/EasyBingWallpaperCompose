@@ -36,6 +36,7 @@ import com.bigflowertiger.compopsebingwallpaper.ui.theme.EasyBingWallpaperTheme
 import com.google.accompanist.systemuicontroller.SystemUiController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
+import free.bigtiger.sunnyweatherarchitecture.data.model.generic.WeatherData
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -56,12 +57,16 @@ class MainActivity : ComponentActivity() {
                 SideEffect {
                     systemUiController.setSystemBarsColor(Color.Transparent)
                 }
-                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                    Text(text = qw.toString())
-                }
-
-//                BingListScreen(navController, systemUiController, bingList)
+//                testQWeather(qw)
+                BingListScreen(navController, systemUiController, bingList)
             }
+        }
+    }
+
+    @Composable
+    private fun testQWeather(qw: WeatherData) {
+        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Text(text = qw.toString())
         }
     }
 
