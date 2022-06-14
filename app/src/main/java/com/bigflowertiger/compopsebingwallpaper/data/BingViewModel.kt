@@ -1,5 +1,6 @@
 package com.bigflowertiger.compopsebingwallpaper.data
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
@@ -75,6 +76,7 @@ class BingViewModel @Inject constructor(
     }
 
     private fun consume(bingList: List<BingItem>) {
+        Log.d("walls", bingList.toString())
         _bingList.value = bingList
             .sortedByDescending { it.startdate }
             .distinctBy { it.hsh }

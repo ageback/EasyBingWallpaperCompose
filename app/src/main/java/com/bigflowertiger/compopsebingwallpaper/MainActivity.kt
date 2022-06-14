@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -60,20 +61,27 @@ class MainActivity : ComponentActivity() {
                                         .padding(4.dp)
                                         .clickable {
                                             // url作为参数在compose传递时需要编码，否则会作为compose参数的一部分，因为compose参数也用url格式
-                                            val encodedUrl = URLEncoder.encode(item.url, StandardCharsets.UTF_8.toString())
+                                            val encodedUrl = URLEncoder.encode(
+                                                item.url,
+                                                StandardCharsets.UTF_8.toString()
+                                            )
                                             navController.navigate("BigViewScreen/${encodedUrl}")
                                         }
                                     ) {
-                                        AsyncImage(
-                                            model = BASE_URL + item.url,
-                                            contentDescription = ""
-                                        )
+                                        Box {
+                                            AsyncImage(
+                                                model = BASE_URL + item.url,
+                                                contentDescription = item.desc
+                                            )
+                                            Text(text = item.title)
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                    composable("BigViewScreen/{imgUrl}",
+                    composable(
+                        "BigViewScreen/{imgUrl}",
                         arguments = listOf(navArgument("imgUrl") {
                             type = NavType.StringType
                         })
